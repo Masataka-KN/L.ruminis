@@ -20,7 +20,12 @@ if [ -e "$OUT" ]; then
     exit 1
 fi
 
-# protein 
+                                                                              
+#各DB由来のIDはあるが、IPR_ID未割り当ての場合が多い。
+#ここでは、Interpro_ID, Pfam_ID, Interpro_description, 各DB_descriptionを正規表現に含めているが、
+#明らかに　awk '{print $4}' ruminis.tsv | sort -u の結果からDBが多すぎて除外されるものが多すぎる。
+#各DBのannotationをどこまで含めるか検討する. 
+
 case "$MODE" in
     strict)
         # OmpR/PhoB-type DNA-binding domainを中心に抽出
