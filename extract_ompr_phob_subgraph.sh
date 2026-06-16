@@ -20,6 +20,7 @@ if [ -e "$OUT" ]; then
     exit 1
 fi
 
+# protein 
 case "$MODE" in
     strict)
         # OmpR/PhoB-type DNA-binding domainを中心に抽出
@@ -40,17 +41,19 @@ TMP_OUT="$(mktemp)"
 
 trap 'rm -f "$TMP_PROTEINS" "$TMP_OUT"' EXIT
 
-# 1. OmpR/PhoB関連edgeを持つprotein IDを抽出
+# OmpR/PhoB関連edgeを持つprotein IDを抽出
 awk -F'\t' -v re="$REGEX" '
 BEGIN {
     OFS = "\t"
 }
+# headerをスキップ
 NR == 1 {
     next
 }
+
 {
     line = tolower($0)
-
+    # ~: 正規表現にマッチするlineの$1: NCBI_protein_id, WP_... を出力
     if (line ~ re) {
         print $1
     }
@@ -64,21 +67,24 @@ if [ "$N_PROTEINS" -eq 0 ]; then
     exit 1
 fi
 
-# 2. そのproteinに対応するedgeを全部取り出す
+# 1つ目のファイルの1列目にあるIDだけを使って、2つ目のTSVをフィルタする
+# headerは上記で排除されているので、1行目から処理.
 awk -F'\t' '
 BEGIN {
     OFS = "\t"
 }
+# 1つ目のファイル 1列目をキーにして配列keepに保存
 NR == FNR {
-    keep[$1] = 1
-    next
+    keep[$1] = 1 
 }
+# 2つ目のファイルはheaderを出力してから、1列目がkeepにある行だけを出力
 FNR == 1 {
-    print
+    print # headerを出力
     next
 }
+
 $1 in keep {
-    print
+    print 
 }
 ' "$TMP_PROTEINS" "$IN" > "$TMP_OUT"
 

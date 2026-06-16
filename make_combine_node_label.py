@@ -9,7 +9,8 @@ def clean_text(s):
     s = str(s).replace("\r", "").strip()
     while "  " in s:
         s = s.replace("  ", " ")
-
+    
+    # MULTIS
     if s.startswith("MULTISPECIES:"):
         s = s.replace("MULTISPECIES:", "", 1).strip()
 

@@ -34,10 +34,9 @@ run_interproscan() {
     echo "InterProScan completed for $input_faa. Output saved to $output_file."
 }
 
-# Run InterProScan for acidphilus　$1=*protein.faa, $2=出力ファイル名
+
 run_interproscan "$acidphilus_faa" "$OUTPUT_DIR/acidphilus_interproscan.tsv"
 
-# Run InterProScan for ruminis
 run_interproscan "$ruminis_faa" "$OUTPUT_DIR/ruminis_interproscan.tsv"
 
 echo "All InterProScan analyses completed."
