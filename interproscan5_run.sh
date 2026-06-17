@@ -1,42 +1,39 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 今回はNCBI Datasets CLIから一括ダウンロードした.faaファイルを使用しました。
-acidphilus_faa="$HOME/data/genome_data/acidphilus/ncbi_dataset/data/GCF_000011985.1/protein.faa"
-ruminis_faa="$HOME/data/genome_data/ruminis/ncbi_dataset/data/GCF_000225845.1/protein.faa"
-
-OUTPUT_DIR="$HOME/data/interproscan_output"
-
-if [ -d "$OUTPUT_DIR" ]; then
-    echo "エラー: ディレクトリが存在します: $OUTPUT_DIR" >&2
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 input.faa output_interproscan.tsv" >&2
     exit 1
 fi
 
-mkdir -p "$OUTPUT_DIR"
+IN_FILE="$1"
+OUT_FILE="$2"
 
+INTERPROSCAN="$HOME/data/interproscan-5.78-109.0/interproscan.sh"
 CPU=16
 
-run_interproscan() {
-    local input_faa="$1"
-    local output_file="$2"
+if [ ! -s "$IN_FILE" ]; then
+    echo "エラー: 入力faaファイルが存在しない、または空です: $IN_FILE" >&2
+    exit 1
+fi
 
-    echo "Running InterProScan on $input_faa..."
+if [ -e "$OUT_FILE" ]; then
+    echo "エラー: 出力ファイルが既に存在します: $OUT_FILE" >&2
+    exit 1
+fi
 
-    bash $HOME/data/interproscan-5.78-109.0/interproscan.sh \
-        -i "$input_faa" \
-        -f tsv \
-        -o "$output_file" \
-        --goterms \
-        --pathways \
-        --iprlookup \
-        --cpu "$CPU"
-    
-    echo "InterProScan completed for $input_faa. Output saved to $output_file."
-}
+echo "Running InterProScan..."
+echo "Input : $IN_FILE"
+echo "Output: $OUT_FILE"
 
+bash "$INTERPROSCAN" \
+    -i "$IN_FILE" \
+    -f tsv \
+    -o "$OUT_FILE" \
+    --goterms \
+    --pathways \
+    --iprlookup \
+    --cpu "$CPU"
 
-run_interproscan "$acidphilus_faa" "$OUTPUT_DIR/acidphilus_interproscan.tsv"
-
-run_interproscan "$ruminis_faa" "$OUTPUT_DIR/ruminis_interproscan.tsv"
-
-echo "All InterProScan analyses completed."
+echo "InterProScan completed."
+echo "Output saved to: $OUT_FILE"
