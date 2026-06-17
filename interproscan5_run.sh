@@ -9,7 +9,7 @@ fi
 IN_FILE="$1"
 OUT_FILE="$2"
 
-INTERPROSCAN="$HOME/data/interproscan-5.78-109.0/interproscan.sh"
+INTERPROSCAN="$HOME/data/interproscan_download/interproscan-5.78-109.0/interproscan.sh"
 CPU=16
 
 if [ ! -s "$IN_FILE" ]; then
