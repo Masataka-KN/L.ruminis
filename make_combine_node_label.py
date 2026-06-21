@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path
 
-MAX_LABEL_LEN = 70
+MAX_LABEL_LEN = 150
 
 
 def clean_text(s):
@@ -10,7 +10,6 @@ def clean_text(s):
     while "  " in s:
         s = s.replace("  ", " ")
     
-    # MULTIS
     if s.startswith("MULTISPECIES:"):
         s = s.replace("MULTISPECIES:", "", 1).strip()
 
@@ -50,7 +49,7 @@ if out_file.exists():
     sys.exit(f"エラー: 出力ファイルが既に存在します: {out_file}")
 
 
-# 1. WP_ID: product の辞書を作る
+# WP_ID: product 
 product_map = {}
 
 with map_file.open() as f:
@@ -98,7 +97,7 @@ def add_node(name, node_type, label=None, product="-", signature="-", interpro="
             node_info[name]["interpro_short"] = interpro
 
 
-# 2. edge_tableを読んでnode tableを作る
+# 
 with edge_file.open() as f:
     header = next(f, None)
 
@@ -133,7 +132,7 @@ with edge_file.open() as f:
             interpro=shorten(interpro_description),
         )
 
-        # target annotation
+        # target annotation 必要な場合は追加してください。
         if interaction == "has_interpro":
             node_type = "interpro_domain"
             desc = interpro_description
@@ -158,14 +157,13 @@ with edge_file.open() as f:
         add_node(target, node_type, label=label)
 
 
-# 3. node_infoを出力する
 with out_file.open("w") as out:
     out.write("name\tnode_label\tnode_type\tproduct_short\tsignature_short\tinterpro_short\n")
 
     # node_infoをnode_typeとnameの両方でソートして出力
     for name in sorted(node_info, key=lambda x: (node_info[x]["node_type"], x)):
         d = node_info[name]
-        # 1行にまとめて出力
+
         out.write(
             f"{name}\t{d['node_label']}\t{d['node_type']}\t"
             f"{d['product_short']}\t{d['signature_short']}\t{d['interpro_short']}\n"

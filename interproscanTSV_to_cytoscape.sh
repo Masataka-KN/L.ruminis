@@ -22,17 +22,22 @@ fi
 TMP="${OUT}.tmp"
 
 # Header
+
+#TO DO : remove dups
 printf "source\ttarget\tinteraction\tevidence_db\tsignature_acc\tsignature_desc\tinterpro_acc\tinterpro_desc\tprotein_length\tstart\tend\tscore\tstatus\n" > "$TMP"
 
-# 今回はinterproscanのoutputをtsvにしている。状況に合わせて適宜変更してください。
+# 今回はinterproscanのoutputをtsvにしている。output formatは状況に合わせて適宜変更してください。
 awk -F'\t' '
 BEGIN {
     OFS = "\t"
 }
 
+# For SIF format, nodes and interactions only.
 # interproscan output format上, --goterms: $14, --pathways: $15に出力される。
 # ここでは13列以上あればOKとする。 MD5_checksumなどの列は除いた。
 # https://interproscan-docs.readthedocs.io/en/v5/OutputFormats.html
+
+# pathway_annotationはターゲットメインが真核生物の上に、莫大になるので削除しました。
 
 NF >= 13 {
     protein_accession = $1
@@ -75,19 +80,6 @@ NF >= 13 {
             g = substr(g, RSTART + RLENGTH)
         }
     }
-    }
-
-    if (pathways_annotation != "" && pathways_annotation != "-") {
-        n = split(pathways_annotation, paths, /\|/) # pathways annotationも複数ある場合があるので、|で分割してそれぞれ出力する
-        for (i = 1; i <= n; i++) {
-            p = paths[i]
-            # 文字列の前後の空白を削除
-            gsub(/^[ \t]+|[ \t]+$/, "", p)
-
-            if (p != "" && p != "-") {
-                print protein_accession, p, "has_pathway", database, signature_accession, signature_description, interpro_accession, interpro_description, sequence_length, start_location, stop_location, e_value, status_t_true
-            }
-        }
     }
 }
 ' "$IN" | sort -u >> "$TMP"
