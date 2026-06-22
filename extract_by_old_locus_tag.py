@@ -93,6 +93,7 @@ def extract_wp_id_from_attrs(attrs):
             if value.startswith("cds-WP_"):
                 return value.replace("cds-", "", 1)
 
+
             m = re.search(r"WP_\d+\.\d+", value)
             if m:
                 return m.group(0)
@@ -168,7 +169,7 @@ def extract_wp_ids_from_gff(gff_file, target_locus):
                         )
                     )
 
-
+    # CDSのみ
     with open(gff_file) as f:
         for line in f:
             if line.startswith("#"): # gff file 最初のコメント行をスキップ.
@@ -189,6 +190,7 @@ def extract_wp_ids_from_gff(gff_file, target_locus):
                 continue
 
             # 今回はold_locus_tagを使いますが、一応再現性の高さからlocus_tagでもヒットするようにしています。
+            # locus_tagとold_locus_tagの重複がないことを確認してください。
             matched_tags = set()
 
             cds_tags = []
@@ -204,7 +206,6 @@ def extract_wp_ids_from_gff(gff_file, target_locus):
                 cds_id = normalize_gff_id(attrs["ID"])
                 matched_tags.update(locus_feature_ids.get(cds_id, set()))
 
-            # Parent=gene-...となるので、最初の部分を削除する必要がありそう.  #関数は追加しました.
             # CDSの行でParent=...はあるが、old_locus_tag, locus_tagが無いものはParentのIDに従うようにしました.
             #sed -n '9p' genomic.gff | grep 'Parent' | grep -v 'old_locus_tag' | wc -l
             # 0  より今回は不要ですが、再現性の高さのためにこのようにしました。
