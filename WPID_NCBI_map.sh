@@ -62,12 +62,6 @@ for chunk in "$TMP_DIR"/chunk_*; do
     sleep 0.4
 done
 
-# FASTA headerから accession と product/function を抽出
-# 例:
-# >WP_012345678.1 MULTISPECIES: response regulator transcription factor [Lactobacillus ...]
-#
-# 出力:
-# WP_012345678.1    MULTISPECIES: response regulator transcription factor
 awk '
 BEGIN {
     OFS = "\t"

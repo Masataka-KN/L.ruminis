@@ -28,7 +28,7 @@ def parse_gff_attributes(attr_text):
         if "=" in item:
             key, value = item.split("=", 1)
 
-            # GFFではURL encodingされている場合があるためunquoteも入れる.
+            # GFFではURL encodingされている場合があるためunquoteを追加.
             key = clean_cell(unquote(key))
             value = clean_cell(unquote(value))
 
@@ -37,7 +37,7 @@ def parse_gff_attributes(attr_text):
     return attrs
 
 
-# locus_tagが複数ある場合に対応させた.
+# locus_tagが複数ある場合に対応させました.
 def split_tags(x):
     if not x:
         return []
@@ -201,7 +201,6 @@ def extract_wp_ids_from_gff(gff_file, target_locus):
                 if tag in target_locus:
                     matched_tags.add(tag)
 
-            # CDS自身のIDが1 pass目で拾われていた場合にも対応.
             if "ID" in attrs:
                 cds_id = normalize_gff_id(attrs["ID"])
                 matched_tags.update(locus_feature_ids.get(cds_id, set()))
@@ -243,6 +242,7 @@ def get_fasta_id(header):
     if m:
         return m.group(0)
 
+    # >WP...
     first = header[1:].split()[0]
     if first.startswith("WP_"):
         return first

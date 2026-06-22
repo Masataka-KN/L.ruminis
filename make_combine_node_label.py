@@ -19,6 +19,7 @@ def clean_text(s):
     return s if s else "-"
 
 
+# Cytoscapeのnodeの長さを調整しています。必要に応じてMAX_LABEL_LENを変更してください。
 def shorten(s, maxlen=MAX_LABEL_LEN):
     if not s or s == "-":
         return "-"
